@@ -2,15 +2,18 @@ import { z } from "zod";
 
 import { router, publicProcedure } from "../trpc";
 
+import { PokemonClient } from "pokenode-ts";
+
 export const exampleRouter = router({
-  addTwoNumbers: publicProcedure
+  "get-pokemon-by-id": publicProcedure
     .input(
       z.object({
-        num1: z.number(),
-        num2: z.number(),
+        id: z.number(),
       })
     )
-    .query(({ input }) => {
-      return input.num1 + input.num2;
+    .query(async ({ input }) => {
+      const api = new PokemonClient();
+      const pokemon = await api.getPokemonById(input.id); 
+      return pokemon;
     }),
 });
