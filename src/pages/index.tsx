@@ -1,6 +1,11 @@
 import { type NextPage } from "next";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
+  const data = trpc.example.addTwoNumbers.useQuery({
+    num1: 1,
+    num2: 2,
+  });
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
       <div className="text-center text-2xl subpixel-antialiased">
@@ -16,6 +21,7 @@ const Home: NextPage = () => {
           Second
         </div>
       </div>
+      <div>tRPC: 1 + 2 = {data.data}</div>
     </div>
   );
 };

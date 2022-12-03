@@ -3,14 +3,14 @@ import { z } from "zod";
 import { router, publicProcedure } from "../trpc";
 
 export const exampleRouter = router({
-  hello: publicProcedure
-    .input(z.object({ text: z.string().nullish() }).nullish())
+  addTwoNumbers: publicProcedure
+    .input(
+      z.object({
+        num1: z.number(),
+        num2: z.number(),
+      })
+    )
     .query(({ input }) => {
-      return {
-        greeting: `Hello ${input?.text ?? "world"}`,
-      };
+      return input.num1 + input.num2;
     }),
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
 });
