@@ -21,6 +21,9 @@ const Home: NextPage = () => {
 
   if (firstPokemon.isLoading || secondPokemon.isLoading) return null;
 
+  if (firstPokemon.data == undefined || secondPokemon.data == undefined)
+    return null;
+
   function refreshPokemons() {
     updateIds(getOptionsForVote());
   }
@@ -31,8 +34,8 @@ const Home: NextPage = () => {
         Which Pokémon is Rounder?
       </div>
       <div className="py-2"></div>
-      <div className="flex items-center justify-between rounded-md border-2 p-8">
-        <div className="h-16 w-16 rounded-md border-2 hover:bg-sky-500">
+      <div className="flex items-center justify-between rounded-md border-2 p-16">
+        <div className="flex h-64 w-64 flex-col rounded-md border-2 hover:bg-sky-500">
           <Image
             src={
               firstPokemon.data?.sprites.front_default
@@ -40,12 +43,17 @@ const Home: NextPage = () => {
                 : ""
             }
             alt="first"
-            width="80"
-            height="80"
+            width="256"
+            height="256"
+            priority
           />
+          <div className="py-2"></div>
+          <div className="text-center text-xl capitalize">
+            {firstPokemon.data.name}
+          </div>
         </div>
         <div className="p-8">VS</div>
-        <div className="h-16 w-16 rounded-md border-2 hover:bg-sky-500">
+        <div className="flex h-64 w-64 flex-col rounded-md border-2 hover:bg-sky-500">
           <Image
             src={
               secondPokemon.data?.sprites.front_default
@@ -53,9 +61,14 @@ const Home: NextPage = () => {
                 : ""
             }
             alt="second"
-            width="80"
-            height="80"
+            width="256"
+            height="256"
+            priority
           />
+          <div className="py-2"></div>
+          <div className="text-center text-xl capitalize">
+            {secondPokemon.data.name}
+          </div>
         </div>
       </div>
       <div className="py-2"></div>

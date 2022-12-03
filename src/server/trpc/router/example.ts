@@ -13,7 +13,8 @@ export const exampleRouter = router({
     )
     .query(async ({ input }) => {
       const api = new PokemonClient();
-      const pokemon = await api.getPokemonById(input.id); 
-      return pokemon;
+
+      const pokemon = await api.getPokemonById(input.id);
+      return {name: pokemon.name, sprites: pokemon.sprites}
     }),
 });
