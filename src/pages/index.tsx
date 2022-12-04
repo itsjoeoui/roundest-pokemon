@@ -15,10 +15,10 @@ const Home: NextPage = () => {
     return null;
   }
 
-  const firstPokemon = trpc.example["get-pokemon-by-id"].useQuery({
+  const firstPokemon = trpc.pokemon["get-pokemon-by-id"].useQuery({
     id: first,
   });
-  const secondPokemon = trpc.example["get-pokemon-by-id"].useQuery({
+  const secondPokemon = trpc.pokemon["get-pokemon-by-id"].useQuery({
     id: second,
   });
 
