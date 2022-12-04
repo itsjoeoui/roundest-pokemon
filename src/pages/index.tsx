@@ -4,6 +4,9 @@ import { getOptionsForVote } from "../utils/getRandomPokemon";
 import { trpc } from "../utils/trpc";
 import Image from "next/image";
 
+const btn =
+  "flex flex-col items-center text-center inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out";
+
 const Home: NextPage = () => {
   const [ids, updateIds] = useState<number[]>(getOptionsForVote());
   const [first, second]: number[] = ids;
@@ -24,18 +27,16 @@ const Home: NextPage = () => {
   if (firstPokemon.data == undefined || secondPokemon.data == undefined)
     return null;
 
-  function refreshPokemons() {
+  const voteForRoundest = (selected: number) => {
     updateIds(getOptionsForVote());
-  }
+  };
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
-      <div className="text-center text-2xl subpixel-antialiased">
-        Which Pokémon is Rounder?
-      </div>
+      <div className="text-center text-2xl">Which Pokémon is Rounder?</div>
       <div className="py-2"></div>
       <div className="flex items-center justify-between rounded-md border-2 p-16">
-        <div className="flex h-64 w-64 flex-col rounded-md border-2 hover:bg-sky-500">
+        <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
           <Image
             src={
               firstPokemon.data?.sprites.front_default
@@ -51,9 +52,11 @@ const Home: NextPage = () => {
           <div className="text-center text-xl capitalize">
             {firstPokemon.data.name}
           </div>
+          <div className="py-2"></div>
+          <div className={btn} onClick={() => voteForRoundest(first)}>Rounder</div>
         </div>
         <div className="p-8">VS</div>
-        <div className="flex h-64 w-64 flex-col rounded-md border-2 hover:bg-sky-500">
+        <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
           <Image
             src={
               secondPokemon.data?.sprites.front_default
@@ -69,12 +72,11 @@ const Home: NextPage = () => {
           <div className="text-center text-xl capitalize">
             {secondPokemon.data.name}
           </div>
+          <div className="py-2"></div>
+          <div className={btn} onClick={() => voteForRoundest(second)}>Rounder</div>
         </div>
       </div>
       <div className="py-2"></div>
-      <div className="text-center" onClick={() => refreshPokemons()}>
-        Refresh
-      </div>
     </div>
   );
 };
