@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { useState } from "react";
 import { getOptionsForVote } from "../utils/getRandomPokemon";
+import type { RouterOutputs } from "../utils/trpc";
 import { trpc } from "../utils/trpc";
 import Image from "next/image";
 
@@ -22,11 +23,6 @@ const Home: NextPage = () => {
     id: second,
   });
 
-  if (firstPokemon.isLoading || secondPokemon.isLoading) return null;
-
-  if (firstPokemon.data == undefined || secondPokemon.data == undefined)
-    return null;
-
   const voteForRoundest = (selected: number) => {
     updateIds(getOptionsForVote());
   };
@@ -36,47 +32,53 @@ const Home: NextPage = () => {
       <div className="text-center text-2xl">Which Pokémon is Rounder?</div>
       <div className="py-2"></div>
       <div className="flex items-center justify-between rounded-md border-2 p-16">
-        <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
-          <Image
-            src={
-              firstPokemon.data?.sprites.front_default
-                ? firstPokemon.data?.sprites.front_default
-                : ""
-            }
-            alt="first"
-            width="256"
-            height="256"
-            priority
-          />
-          <div className="py-2"></div>
-          <div className="text-center text-xl capitalize">
-            {firstPokemon.data.name}
-          </div>
-          <div className="py-2"></div>
-          <div className={btn} onClick={() => voteForRoundest(first)}>Rounder</div>
-        </div>
-        <div className="p-8">VS</div>
-        <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
-          <Image
-            src={
-              secondPokemon.data?.sprites.front_default
-                ? secondPokemon.data?.sprites.front_default
-                : ""
-            }
-            alt="second"
-            width="256"
-            height="256"
-            priority
-          />
-          <div className="py-2"></div>
-          <div className="text-center text-xl capitalize">
-            {secondPokemon.data.name}
-          </div>
-          <div className="py-2"></div>
-          <div className={btn} onClick={() => voteForRoundest(second)}>Rounder</div>
-        </div>
+        {!firstPokemon.isLoading &&
+          firstPokemon.data &&
+          !secondPokemon.isLoading &&
+          secondPokemon.data && (
+            <>
+              <PokemonListening
+                pokemon={firstPokemon.data}
+                vote={() => voteForRoundest(first)}
+              />
+              <div className="p-8">VS</div>
+              <PokemonListening
+                pokemon={secondPokemon.data}
+                vote={() => voteForRoundest(second)}
+              />
+            </>
+          )}
       </div>
       <div className="py-2"></div>
+    </div>
+  );
+};
+
+type PokemonFromServer = RouterOutputs["pokemon"]["get-pokemon-by-id"];
+
+const PokemonListening: React.FC<{
+  pokemon: PokemonFromServer;
+  vote: () => void;
+}> = (props) => {
+  return (
+    <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
+      <Image
+        src={
+          props.pokemon.sprites.front_default
+            ? props.pokemon.sprites.front_default
+            : ""
+        }
+        alt="second"
+        width="256"
+        height="256"
+        priority
+      />
+      <div className="py-2"></div>
+      <div className="text-center text-xl capitalize">{props.pokemon.name}</div>
+      <div className="py-2"></div>
+      <div className={btn} onClick={() => props.vote()}>
+        Rounder
+      </div>
     </div>
   );
 };
