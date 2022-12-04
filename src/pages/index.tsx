@@ -25,6 +25,8 @@ const Home: NextPage = () => {
 
   const voteMutation = trpc.pokemon["cast-vote"].useMutation();
 
+  // const backFill = trpc.pokemon["fill-db"].useMutation();
+
   const voteForRoundest = (selected: number) => {
     if (selected === first) {
       voteMutation.mutate({ votedFor: first, votedAgainst: second });
@@ -57,6 +59,9 @@ const Home: NextPage = () => {
           )}
       </div>
       <div className="py-2"></div>
+      {/* <div className={btn} onClick={() => backFill.mutate({})}>
+        Fill DB
+      </div> */}
     </div>
   );
 };

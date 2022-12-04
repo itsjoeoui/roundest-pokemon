@@ -28,4 +28,25 @@ export const pokemonRouter = router({
       });
       return { success: true };
     }),
+  "fill-db": publicProcedure.input(z.object({})).mutation(async () => {
+    if (process.env.NODE_ENV === "development") {
+      const api = new PokemonClient();
+      const pokemons = await api.listPokemons(0, 493);
+
+      const formated = pokemons.results.map((poke, idx) => ({
+        name: (poke as { name: string }).name,
+        spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+          idx + 1
+        }.png`,
+      }));
+
+      const creation = await prisma.pokemon.createMany({
+        data: formated,
+      });
+
+      console.log("Created", creation);
+      return { success: true };
+    }
+    return { success: false };
+  }),
 });
