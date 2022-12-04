@@ -23,7 +23,14 @@ const Home: NextPage = () => {
     id: second,
   });
 
+  const voteMutation = trpc.pokemon["cast-vote"].useMutation();
+
   const voteForRoundest = (selected: number) => {
+    if (selected === first) {
+      voteMutation.mutate({ votedFor: first, votedAgainst: second });
+    } else {
+      voteMutation.mutate({ votedFor: second, votedAgainst: first });
+    }
     updateIds(getOptionsForVote());
   };
 
@@ -68,7 +75,7 @@ const PokemonListening: React.FC<{
             ? props.pokemon.sprites.front_default
             : ""
         }
-        alt="second"
+        alt={props.pokemon.name}
         width="256"
         height="256"
         priority
