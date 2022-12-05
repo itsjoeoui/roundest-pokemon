@@ -29,9 +29,9 @@ const Home: NextPage = () => {
 
   const voteForRoundest = (selected: number) => {
     if (selected === first) {
-      voteMutation.mutate({ votedFor: first, votedAgainst: second });
+      voteMutation.mutate({ forId: first, againstId: second });
     } else {
-      voteMutation.mutate({ votedFor: second, votedAgainst: first });
+      voteMutation.mutate({ forId: second, againstId: first });
     }
     updateIds(getOptionsForVote());
   };
@@ -75,11 +75,7 @@ const PokemonListening: React.FC<{
   return (
     <div className="flex flex-col rounded-md border-2 p-8 hover:bg-sky-500">
       <Image
-        src={
-          props.pokemon.sprites.front_default
-            ? props.pokemon.sprites.front_default
-            : ""
-        }
+        src={props.pokemon.spriteUrl}
         alt={props.pokemon.name}
         width="256"
         height="256"

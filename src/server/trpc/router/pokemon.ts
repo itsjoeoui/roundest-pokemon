@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { router, publicProcedure } from "../trpc";
 
-import { PokemonClient } from "pokenode-ts";
+// import { PokemonClient } from "pokenode-ts";
 import { prisma } from "../../db/client";
 
 export const pokemonRouter = router({
@@ -13,40 +13,44 @@ export const pokemonRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const api = new PokemonClient();
-
-      const pokemon = await api.getPokemonById(input.id);
-      return { name: pokemon.name, sprites: pokemon.sprites };
+      const pokemon = await prisma.pokemon.findFirstOrThrow({
+        where: {
+          pokeId: `${input.id}`,
+        },
+      });
+      return pokemon;
     }),
   "cast-vote": publicProcedure
-    .input(z.object({ votedFor: z.number(), votedAgainst: z.number() }))
+    .input(z.object({ forId: z.number(), againstId: z.number() }))
     .mutation(async ({ input }) => {
       const voteInDb = await prisma.vote.create({
         data: {
-          ...input,
+          againstId: `${input.againstId}`,
+          forId: `${input.forId}`,
         },
       });
       return { success: true };
     }),
-  "fill-db": publicProcedure.input(z.object({})).mutation(async () => {
-    if (process.env.NODE_ENV === "development") {
-      const api = new PokemonClient();
-      const pokemons = await api.listPokemons(0, 493);
+  // "fill-db": publicProcedure.input(z.object({})).mutation(async () => {
+  //   if (process.env.NODE_ENV === "development") {
+  //     const api = new PokemonClient();
+  //     const pokemons = await api.listPokemons(0, 493);
 
-      const formated = pokemons.results.map((poke, idx) => ({
-        name: (poke as { name: string }).name,
-        spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-          idx + 1
-        }.png`,
-      }));
+  //     const formated = pokemons.results.map((poke, idx) => ({
+  //       pokeId: `${idx}`,
+  //       name: (poke as { name: string }).name,
+  //       spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+  //         idx + 1
+  //       }.png`,
+  //     }));
 
-      const creation = await prisma.pokemon.createMany({
-        data: formated,
-      });
+  //     const creation = await prisma.pokemon.createMany({
+  //       data: formated,
+  //     });
 
-      console.log("Created", creation);
-      return { success: true };
-    }
-    return { success: false };
-  }),
+  //     console.log("Created", creation);
+  //     return { success: true };
+  //   }
+  //   return { success: false };
+  // }),
 });
