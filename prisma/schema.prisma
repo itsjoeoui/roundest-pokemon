@@ -6,20 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model Vote {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt    DateTime @default(now())
-  forId        String
-  againstId    String
+  id             BigInt   @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  votedFor       Pokemon  @relation(name: "votedFor", fields: [votedForId], references: [id])
+  votedForId     BigInt
+  votedAgainst   Pokemon  @relation(name: "votedAgainst", fields: [votedAgainstId], references: [id])
+  votedAgainstId BigInt
 }
 
 model Pokemon {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  pokeId    String
-  name      String
-  spriteUrl String
+  id           BigInt @id
+  name         String
+  spriteUrl    String
+  votedFor     Vote[] @relation("votedFor")
+  votedAgainst Vote[] @relation("votedAgainst")
 }

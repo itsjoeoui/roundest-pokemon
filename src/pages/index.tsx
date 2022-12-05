@@ -25,6 +25,8 @@ const Home: NextPage = () => {
 
   const voteMutation = trpc.pokemon["cast-vote"].useMutation();
 
+  const pokemonRanking = trpc.pokemon["get-ranking"].useQuery();
+
   // const backFill = trpc.pokemon["fill-db"].useMutation();
 
   const voteForRoundest = (selected: number) => {
@@ -34,6 +36,7 @@ const Home: NextPage = () => {
       voteMutation.mutate({ forId: second, againstId: first });
     }
     updateIds(getOptionsForVote());
+    pokemonRanking.refetch();
   };
 
   return (
@@ -58,10 +61,35 @@ const Home: NextPage = () => {
             </>
           )}
       </div>
-      <div className="py-2"></div>
-      {/* <div className={btn} onClick={() => backFill.mutate({})}>
+      {/* <div className="py-2"></div>
+      <div className={btn} onClick={() => backFill.mutate({})}>
         Fill DB
       </div> */}
+      <div className="py-2"></div>
+      <div className="text-center text-2xl">Top 10 Roundest</div>
+      {pokemonRanking.data?.map((poke, idx) => {
+        if (poke._count.votedFor !== 0) {
+          return <PokemonRanking poke={poke} key={idx} />;
+        }
+      })}
+    </div>
+  );
+};
+
+const PokemonRanking: React.FC<{
+  poke: {
+    _count: {
+      votedFor: number;
+      votedAgainst: number;
+    };
+    id: bigint;
+    name: string;
+    spriteUrl: string;
+  };
+}> = (props) => {
+  return (
+    <div className="">
+      {props.poke.name}: {props.poke._count.votedFor}
     </div>
   );
 };
